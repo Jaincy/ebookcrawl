@@ -180,7 +180,7 @@ def to_xlsx(input_row, weixin_token):
 
 
 # weixin_token = get_weixin_token()
-df = pd.read_excel("input.xlsx")
+df = pd.read_excel("../excel/input.xlsx")
 write_df = []
 columns = ["isbn", "书名", "豆瓣书名", "作者", "出版社",
            "评分", "评分人数", "电子书价格", "标签", "豆瓣简介",
@@ -201,5 +201,5 @@ for i in range(len(df)):
                          "", "", ""])
 
 dt = pd.DataFrame(write_df, columns=columns)
-dt.to_excel("output.xlsx")
+dt.to_excel("../excel/output.xlsx")
 print("输出成功")
