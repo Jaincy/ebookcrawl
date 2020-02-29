@@ -178,7 +178,6 @@ def to_xlsx(input_row, weixin_token):
     print(row)
     write_df.append(row)
 
-
 # weixin_token = get_weixin_token()
 df = pd.read_excel("../excel/input.xlsx")
 write_df = []
