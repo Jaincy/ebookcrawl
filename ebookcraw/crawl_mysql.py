@@ -7,7 +7,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
-
+import datetime
 
 
 def get_weixin_token():
@@ -145,13 +145,16 @@ def get_douban(isbn):
     return row
 
 
-def to_xlsx(input_row, weixin_token):
-    row = [isbn, ebook_name]
+def to_line(input_row, weixin_token):
+    ebook_id = int(input_row['tid'])
+    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
+    ebook_name = input_row['title']
+    row = [ebook_id, isbn, ebook_name]
     try:
         row.extend(get_douban(isbn))
     except:
         traceback.print_exc()
-        row.extend(["", "", "", "", "", "", "", ""])
+        row.extend(["", "", "", "", 0, "", "", ""])
 
     try:
         row.extend([get_dangdang(isbn)])
@@ -176,37 +179,37 @@ def to_xlsx(input_row, weixin_token):
     # except:
     #     traceback.print_exc()
     #     row.extend([""])
+    update_time = datetime.datetime.now()
 
+    # row.extend(input_row['create_time'])
     print(row)
-    write_df.append(row)
-
+    return row
 
 # conn = pymysql.connect(host="192.168.1.224", user="root", passwd="123456", db="reportsystem", charset="utf8")
-engine = create_engine('mysql+pymysql://fddsh:776b1418FD@rm-bp17f339l75zuqrwgqo.mysql.rds.aliyuncs.com:3306/innovationsystem')
-sql_query = 'SELECT isbn,title FROM innovationsystem.t_ebook_library limit 2'
-df = pd.read_sql(sql=sql_query, con=engine)
-print(df)
-
-write_df = []
-columns = ["isbn", "ebook_name", "douban_name", "author", "publisher",
-           "rate", "num_raters", "douban_price", "tags", "douban_summary",
-           "dangdang_price", "jingdong_price", "amazon_price"]
-
-for i in range(len(df)):
-    input_row = df.loc[i]
-    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
-    ebook_name = input_row['title']
-    print("isbn   " + str(input_row['isbn']))
-    try:
-        to_xlsx(input_row, "")
-    except:
-        traceback.print_exc()
-        write_df.append([isbn, ebook_name, "", "", "",
-                         "", "", "", "", "",
-                         "", "", ""])
-
-dt = pd.DataFrame(write_df, columns=columns)
-print("输出成功")
-
-
-dt.to_sql('t_ebook_consultation', engine, if_exists='append', index=False,chunksize=100)
+# engine = create_engine('mysql+pymysql://root:dzx561.@:129.226.62.102:3306/bigdata')
+# sql_query = 'SELECT isbn,title FROM bigdata.t_ebook_library limit 2'
+# df = pd.read_sql(sql=sql_query, con=engine)
+# print(df)
+#
+# write_df = []
+# columns = ["isbn", "ebook_name", "douban_name", "author", "publisher",
+#            "rate", "num_raters", "douban_price", "tags", "douban_summary",
+#            "dangdang_price", "jingdong_price", "amazon_price"]
+#
+# for i in range(len(df)):
+#     input_row = df.loc[i]
+#     isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
+#     ebook_name = input_row['title']
+#     print("isbn   " + str(input_row['isbn']))
+#     try:
+#         write_df.append(to_xlsx(input_row, ""))
+#     except:
+#         traceback.print_exc()
+#         write_df.append([isbn, ebook_name, "", "", "",
+#                          "", "", "", "", "",
+#                          "", "", ""])
+#
+# dt = pd.DataFrame(write_df, columns=columns)
+# print("输出成功")
+#
+# dt.to_sql('t_ebook_consultation', engine, if_exists='append', index=False, chunksize=100)

@@ -33,9 +33,7 @@ def get_weixin_token():
 
 
 def get_weixin_price(isbn, weixin_token):
-    # url = 'https://i.weread.qq.com/store/search?keyword=%E7%88%B1%E7%9A%84%E8%89%BA%E6%9C%AF&author=&authorVids=&categoryId=&count=7&maxIdx=0&type=0&v=2&outer=1&fromBookId=&scope=0&scene=5&filterType=0&filterField='
     url = 'https://i.weread.qq.com/store/search?keyword=' + isbn + '&author=&authorVids=&categoryId=&count=7&maxIdx=0&type=0&v=2&outer=1&fromBookId=&scope=0&scene=5&filterType=0&filterField='
-    # url='https://i.weread.qq.com/book/info?bookId=807170'
     data = {}
     headers = {
         'accessToken': weixin_token['accessToken'],
@@ -178,7 +176,8 @@ def to_xlsx(input_row, weixin_token):
     print(row)
     write_df.append(row)
 
-# weixin_token = get_weixin_token()
+
+#weixin_token ={'accessToken': ,"vid":}
 df = pd.read_excel("../excel/input.xlsx")
 write_df = []
 columns = ["isbn", "书名", "豆瓣书名", "作者", "出版社",
