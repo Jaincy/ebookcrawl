@@ -145,10 +145,10 @@ def get_douban(isbn):
     return row
 
 
-def to_line(input_row, weixin_token):
+def to_line(input_row):
     ebook_id = int(input_row['tid'])
     isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
-    ebook_name = input_row['title']
+    ebook_name = ""
     row = [ebook_id, isbn, ebook_name]
     try:
         row.extend(get_douban(isbn))

@@ -1,9 +1,10 @@
 # coding=utf-8
 
-
 import datetime
+import random
 import traceback
 from datetime import timedelta
+from time import sleep
 
 import pandas as pd
 from sqlalchemy import create_engine
@@ -12,41 +13,76 @@ from ebookcraw.crawl_mysql import to_line
 
 now = datetime.datetime.now()
 
-#本周第一天和最后一天
+# 本周第一天
 this_week_start = (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d")
-this_week_end = (now + timedelta(days=6-now.weekday())).strftime("%Y-%m-%d")
 
-# 上周第一天和最后一天
+# 上周第一天
 last_week_start = (now - timedelta(days=now.weekday() + 7)).strftime("%Y-%m-%d")
-last_week_end = (now - timedelta(days=now.weekday() + 1)).strftime("%Y-%m-%d")
 
 engine = create_engine('mysql+pymysql://root:dzx561.@118.25.112.177:3306/bigdata')
-sql_query = "SELECT tid,isbn,title,create_time FROM bigdata.t_ebook_library  where  DATE_FORMAT(create_time,'%%Y-%%m-%%d')='" + day_id + "' limit 2"
-df = pd.read_sql(sql=sql_query, con=engine)
-print(df)
 
-write_df = []
+# 上周数据
+last_query = "SELECT tid,ebook_id,isbn,ebook_name,douban_price,dangdang_price,jingdong_price,amazon_price FROM bigdata.t_ebook_crawl " + \
+             "where week_id='" + last_week_start + "' order by tid asc"
+last_df = pd.read_sql(sql=last_query, con=engine)
+
 columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publisher",
-           "rate", "num_raters", "douban_price", "tags", "douban_summary",
-           "dangdang_price", "jingdong_price", "amazon_price"]
+           "rate", "num_raters", "douban_price", "douban_change", "tags", "douban_summary",
+           "dangdang_price", "dangdang_change", "jingdong_price", "jingdong_change", "amazon_price", "amazon_change",
+           "week_id"]
 
-for i in range(len(df)):
-    input_row = df.loc[i]
+this_columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publisher",
+                "rate", "num_raters", "douban_price", "tags", "douban_summary",
+                "dangdang_price", "jingdong_price", "amazon_price"]
+
+for i in range(len(last_df)):
+    last_line = last_df.loc[i]
     # isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
     # ebook_name = input_row['title']
-    print("isbn   " + str(input_row['isbn']))
+    print(last_line)
+    print("isbn   " + str(last_line['isbn']))
     try:
-        row = to_line(input_row, "")
-        write_df.append(row)
+        # 爬出新数据
+        this_data = []
+        row = to_line(last_line)
+        this_data.append(row)
+        this_df = pd.DataFrame(this_data, columns=this_columns)
+        this_line = this_df.loc[0]
 
+        # 判断价格变动
+        if last_line['douban_price'] == this_line['douban_price']:
+            douban_change = 0
+        else:
+            douban_change = 1
+
+        if last_line['dangdang_price'] == this_line['dangdang_price']:
+            dangdang_change = 0
+        else:
+            dangdang_change = 1
+
+        if last_line['jingdong_price'] == this_line['jingdong_price']:
+            jingdong_change = 0
+        else:
+            jingdong_change = 1
+
+        if last_line['amazon_price'] == this_line['amazon_price']:
+            amazon_change = 0
+        else:
+            amazon_change = 1
+        # 将价格变动赋值
+        this_line["douban_change"] = douban_change
+        this_line["dangdang_change"] = dangdang_change
+        this_line["jingdong_change"] = jingdong_change
+        this_line["amazon_change"] = amazon_change
+        # 赋值week_id
+        this_line["week_id"] = this_week_start
+        # 插入新的数据
+        df = pd.DataFrame().append(this_line)
+        print(df)
+        df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
+                  chunksize=100)
+        # sleep(random.randint(1, 300))
     except:
         traceback.print_exc()
-        # write_df.append([isbn, ebook_name, "", "", "",
-        #                  "", 0, "", "", "",
-        #                  "", "", "",])
 
-dt = pd.DataFrame(write_df, columns=columns)
-print(df)
 print("输出成功")
-
-dt.to_sql('t_ebook_crawl', engine, if_exists='append', index=False, chunksize=100)

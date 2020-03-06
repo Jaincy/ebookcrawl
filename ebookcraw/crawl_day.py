@@ -46,9 +46,7 @@ for i in range(len(df)):
 
     except:
         traceback.print_exc()
-        # write_df.append([isbn, ebook_name, "", "", "",
-        #                  "", 0, "", "", "",
-        #                  "", "", "",])
+
 
 dt = pd.DataFrame(write_df, columns=columns)
 print(df)
