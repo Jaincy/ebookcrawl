@@ -37,10 +37,7 @@ this_columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publ
 
 for i in range(len(last_df)):
     last_line = last_df.loc[i]
-    # isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
-    # ebook_name = input_row['title']
     print(last_line)
-    print("isbn   " + str(last_line['isbn']))
     try:
         # 爬出新数据
         this_data = []
