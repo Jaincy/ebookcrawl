@@ -8,7 +8,7 @@ from datetime import timedelta
 import pandas as pd
 from sqlalchemy import create_engine
 
-from ebookcraw.crawl_mysql import to_line
+from .crawl_mysql import to_line
 
 
 def getYesterday():
