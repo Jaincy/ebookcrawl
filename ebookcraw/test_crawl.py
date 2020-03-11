@@ -4,7 +4,7 @@ from urllib.request import urlopen
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-import t
+import time
 
 def get_amazon(isbn):
     firefox_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0',
@@ -85,6 +85,40 @@ def get_weixin_token():
     return json.loads(response.text)
 
 
+def get_douban(isbn):
+
+    # href = bs0bj.find(class_="cover-link").find('a').get('href')
+
+
+    # 包装头部
+    firefox_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0'}
+    url = "https://search.douban.com/book/subject_search?search_text=" + str(isbn)+"&cat=1001"
+    url="https://book.douban.com/subject/1056023/"
+    print(url)
+    # html = urlopen(url)
+    # bs0bj = BeautifulSoup(html)
+    # print(bs0bj.contents)
+
+    # 构建请求
+    response = requests.get(url, headers=firefox_headers)
+    content = response.content
+    strs = str(content, encoding="utf-8")
+
+    # 截取字符串<span class="buylink-price">
+    #
+    #             <span class="">5.99 元</span>
+    #           </span>
+    print(strs)
+    # bsd= BeautifulSoup(strs)
+    #
+    # p=bsd.find(class_="buylink-price")
+    # print(p)
+    return "1"
+
+get_douban(9787805677316)
+
 # get_weixin_token()
 
-print("sfsdf,".split(",")[1])
+# print("sfsdf,".split(",")[1])
+
+
