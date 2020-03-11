@@ -1,7 +1,7 @@
 ﻿# coding=utf-8
 import json
 import traceback
-from random import random
+import random
 from time import sleep
 from urllib.request import urlopen
 import pandas as pd
