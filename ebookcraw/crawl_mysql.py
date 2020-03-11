@@ -153,26 +153,26 @@ def to_line(input_row):
     try:
         row.extend(get_douban(isbn))
     except:
-        traceback.print_exc()
         row.extend(["", "", "", "", 0, "", "", ""])
+        traceback.print_exc()
 
     try:
         row.extend([get_dangdang(isbn)])
     except:
-        traceback.print_exc()
         row.extend([""])
+        traceback.print_exc()
 
     try:
         row.extend([get_jingdong(isbn)])
     except:
-        traceback.print_exc()
         row.extend([""])
+        traceback.print_exc()
 
     try:
         row.extend([get_amazon(isbn)])
     except:
-        traceback.print_exc()
         row.extend([""])
+        traceback.print_exc()
 
     # try:
     #     row.extend([get_weixin_price(isbn, weixin_token)])
@@ -181,7 +181,6 @@ def to_line(input_row):
     #     row.extend([""])
     update_time = datetime.datetime.now()
 
-    # row.extend(input_row['create_time'])
     print(row)
     return row
 

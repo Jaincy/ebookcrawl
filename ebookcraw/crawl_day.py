@@ -25,31 +25,30 @@ now = datetime.datetime.now()
 this_week_start = (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d")
 
 engine = create_engine('mysql+pymysql://root:dzx561.@118.25.112.177:3306/bigdata')
-sql_query = "SELECT tid,isbn,title,create_time FROM bigdata.t_ebook_library  where  DATE_FORMAT(create_time,'%%Y-%%m-%%d')='" + day_id + "' limit 2"
+sql_query = "SELECT tid,isbn,title,create_time FROM bigdata.t_ebook_library  where  DATE_FORMAT(create_time,'%%Y-%%m-%%d')='" + day_id + "' "
 df = pd.read_sql(sql=sql_query, con=engine)
-print(df)
 
-write_df = []
 columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publisher",
            "rate", "num_raters", "douban_price", "tags", "douban_summary",
            "dangdang_price", "jingdong_price", "amazon_price", "week_id"]
 
 for i in range(len(df)):
-    input_row = df.loc[i]
-    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
-    ebook_name = input_row['title']
-    print("isbn   " + str(input_row['isbn']))
+    last_line = df.loc[i]
+    print(last_line)
     try:
-        row = to_line(input_row, "")
-        row.append(this_week_start)
-        write_df.append(row)
+        # 爬出新数据
+        this_data = []
+        this_row = to_line(last_line)
+        this_row.append(this_week_start)
+        this_data.append(this_row)
 
+        # 插入新的数据
+        write_df = pd.DataFrame(this_data, columns=columns)
+        print(write_df)
+        write_df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
+                  chunksize=100)
+        # sleep(random.randint(1, 300))
     except:
         traceback.print_exc()
 
-
-dt = pd.DataFrame(write_df, columns=columns)
-print(df)
 print("输出成功")
-
-dt.to_sql('t_ebook_crawl', engine, if_exists='append', index=False, chunksize=100)
