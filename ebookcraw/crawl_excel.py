@@ -1,6 +1,8 @@
 ﻿# coding=utf-8
 import json
 import traceback
+from random import random
+from time import sleep
 from urllib.request import urlopen
 import pandas as pd
 import requests
@@ -189,6 +191,7 @@ for i in range(len(df)):
     input_row = df.loc[i]
     print(input_row)
     try:
+        sleep(random.randint(1, 5))
         to_xlsx(input_row, "")
     except:
         traceback.print_exc()
