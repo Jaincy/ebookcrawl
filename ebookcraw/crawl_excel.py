@@ -191,7 +191,7 @@ for i in range(len(df)):
     input_row = df.loc[i]
     print(input_row)
     try:
-        sleep(random.randint(1, 5))
+        sleep(random.randint(5000, 10000))
         to_xlsx(input_row, "")
     except:
         traceback.print_exc()
