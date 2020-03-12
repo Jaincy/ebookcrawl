@@ -119,6 +119,8 @@ def get_jingdong(isbn):
 
 def get_douban(isbn):
     url = "https://douban-api.uieee.com/v2/book/isbn/" + isbn
+    url="https://douban.uieee.com/v2/book/isbn/"+isbn
+
     print("url:  " + url)
     # 包装头部
     firefox_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0'}
@@ -153,26 +155,26 @@ def to_line(input_row):
     try:
         row.extend(get_douban(isbn))
     except:
-        traceback.print_exc()
         row.extend(["", "", "", "", 0, "", "", ""])
+        traceback.print_exc()
 
     try:
         row.extend([get_dangdang(isbn)])
     except:
-        traceback.print_exc()
         row.extend([""])
+        traceback.print_exc()
 
     try:
         row.extend([get_jingdong(isbn)])
     except:
-        traceback.print_exc()
         row.extend([""])
+        traceback.print_exc()
 
     try:
         row.extend([get_amazon(isbn)])
     except:
-        traceback.print_exc()
         row.extend([""])
+        traceback.print_exc()
 
     # try:
     #     row.extend([get_weixin_price(isbn, weixin_token)])
@@ -181,7 +183,6 @@ def to_line(input_row):
     #     row.extend([""])
     update_time = datetime.datetime.now()
 
-    # row.extend(input_row['create_time'])
     print(row)
     return row
 
