@@ -7,6 +7,7 @@ from urllib.request import urlopen
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+import sys
 
 
 def get_weixin_token():
@@ -115,7 +116,7 @@ def get_jingdong(isbn):
 
 def get_douban(isbn):
     url = "https://douban-api.uieee.com/v2/book/isbn/" + isbn
-    url="https://douban.uieee.com/v2/book/isbn/"+isbn
+    url = "https://douban.uieee.com/v2/book/isbn/" + isbn
     print("url:  " + url)
     # 包装头部
     firefox_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0'}
@@ -179,8 +180,9 @@ def to_xlsx(input_row, weixin_token):
     write_df.append(row)
 
 
-#weixin_token ={'accessToken': ,"vid":}
-df = pd.read_excel("../excel/input.xlsx")
+file = sys.argv[1]
+# weixin_token ={'accessToken': ,"vid":}
+df = pd.read_excel("../excel/" + file)
 write_df = []
 columns = ["isbn", "书名", "豆瓣书名", "作者", "出版社",
            "评分", "评分人数", "电子书价格", "标签", "豆瓣简介",
@@ -202,5 +204,5 @@ for i in range(len(df)):
                          "", "", ""])
 
 dt = pd.DataFrame(write_df, columns=columns)
-dt.to_excel("../excel/output.xlsx")
+dt.to_excel("../excel/" + file + "_output.xlsx")
 print("输出成功")
