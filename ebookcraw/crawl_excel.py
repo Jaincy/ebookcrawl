@@ -10,7 +10,6 @@ from bs4 import BeautifulSoup
 def get_weixin_token():
     url = 'https://i.weread.qq.com/guestLogin'
     headers = {
-
         "appver": "5.5.1.10141765",
         "User-Agent": "WeRead/4.5.1 WRBrand/null Dalvik/2.1.0 (Linux; U; Android 9; 16s Build/PKQ1.190202.001)",
         "osver": "9",
