@@ -182,7 +182,7 @@ def to_xlsx(input_row, weixin_token):
 
 file = sys.argv[1]
 # weixin_token ={'accessToken': ,"vid":}
-df = pd.read_excel("../excel/" + file)
+df = pd.read_excel("../excel/" + file+".xlsx")
 write_df = []
 columns = ["isbn", "书名", "豆瓣书名", "作者", "出版社",
            "评分", "评分人数", "电子书价格", "标签", "豆瓣简介",
