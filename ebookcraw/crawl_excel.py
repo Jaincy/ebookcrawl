@@ -204,5 +204,7 @@ for i in range(len(df)):
                          "", "", ""])
 
 dt = pd.DataFrame(write_df, columns=columns)
-dt.to_excel("../excel/" + file + "_output.xlsx")
+# dt.to_excel("../excel/" + file + "_output.xlsx")
+dt.to_csv("../excel/" + file + "_output.csv")
+
 print("输出成功")
