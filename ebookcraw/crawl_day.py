@@ -4,6 +4,8 @@
 import datetime
 import traceback
 from datetime import timedelta
+from random import random
+from time import sleep
 
 import pandas as pd
 from sqlalchemy import create_engine
@@ -48,7 +50,7 @@ for i in range(len(df)):
         print(write_df)
         write_df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
                   chunksize=100)
-        # sleep(random.randint(1, 300))
+        sleep(random.randint(1, 10))
     except:
         traceback.print_exc()
 
