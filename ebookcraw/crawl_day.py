@@ -20,6 +20,7 @@ def getYesterday():
 
 day_id = getYesterday()
 
+
 now = datetime.datetime.now()
 # 本周第一天
 this_week_start = (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d")
