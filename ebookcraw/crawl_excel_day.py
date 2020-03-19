@@ -44,7 +44,7 @@ for i in range(len(df)):
 
         # 插入新的数据
         write_df = pd.DataFrame(this_data, columns=columns)
-        write_df.to_sql('t_ebook_excel_crawl', engine, if_exists='append', index=False,
+        write_df.to_sql('t_ebook_excel_crawl', engine, if_exists='replace', index=False,
                   chunksize=100)
         # sleep(random.randint(1, 300))
     except:
