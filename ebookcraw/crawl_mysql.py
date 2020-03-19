@@ -176,14 +176,9 @@ def to_line(input_row):
         row.extend([""])
         traceback.print_exc()
 
-    # try:
-    #     row.extend([get_weixin_price(isbn, weixin_token)])
-    # except:
-    #     traceback.print_exc()
-    #     row.extend([""])
     update_time = datetime.datetime.now()
 
-    print(row)
+    print("to_line   "+row)
     return row
 
 # conn = pymysql.connect(host="192.168.1.224", user="root", passwd="123456", db="reportsystem", charset="utf8")
