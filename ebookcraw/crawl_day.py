@@ -2,6 +2,7 @@
 
 
 import datetime
+import sys
 import traceback
 from datetime import timedelta
 from random import random
@@ -20,8 +21,11 @@ def getYesterday():
     return str(yesterday)
 
 
-day_id = getYesterday()
+if len(sys.argv) == 2:
+    day_id = sys.argv[1]
 
+# sys.argv[1]
+day_id = getYesterday()
 
 now = datetime.datetime.now()
 # 本周第一天
@@ -49,7 +53,7 @@ for i in range(len(df)):
         write_df = pd.DataFrame(this_data, columns=columns)
         print(write_df)
         write_df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
-                  chunksize=100)
+                        chunksize=100)
         sleep(random.randint(1, 10))
     except:
         traceback.print_exc()
