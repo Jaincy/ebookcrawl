@@ -178,7 +178,8 @@ def to_line(input_row):
 
     update_time = datetime.datetime.now()
 
-    print("to_line   "+row)
+    print("to_line   ")
+    print(row)
     return row
 
 # conn = pymysql.connect(host="192.168.1.224", user="root", passwd="123456", db="reportsystem", charset="utf8")
