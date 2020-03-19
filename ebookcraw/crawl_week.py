@@ -26,6 +26,10 @@ last_query = "SELECT tid,ebook_id,isbn,ebook_name,douban_price,dangdang_price,ji
              "where week_id='" + last_week_start + "' order by tid asc"
 last_df = pd.read_sql(sql=last_query, con=engine)
 
+# 书库
+lib_query = "SELECT tid,isbn,title FROM bigdata.t_ebook_library "
+lib_df = pd.read_sql(sql=lib_query, con=engine)
+
 
 columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publisher",
            "rate", "num_raters", "douban_price", "douban_change", "tags", "douban_summary",

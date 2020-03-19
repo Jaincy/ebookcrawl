@@ -138,7 +138,7 @@ def get_douban(isbn):
 
     l = ""
     for i in range(len(djson["tags"])):
-        l = l + djson["tags"][i]["name"] + "  "
+        l = l + djson["tags"][i]["name"] + ","
     # 3. 构建列表头 ISBN	名称	作者	出版时间	对应出版社		豆瓣书名	豆瓣评分	参与评分人数	豆瓣电子书价格	豆瓣标签
     row = [djson["title"], djson['author'][0], djson['publisher'], djson['rating']['average'],
            djson['rating']['numRaters'],
@@ -148,9 +148,9 @@ def get_douban(isbn):
 
 
 def to_line(input_row):
-    ebook_id = int(input_row['tid'])
+    ebook_id = int(input_row['ebook_id'])
     isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
-    ebook_name = ""
+    ebook_name = str(input_row["ebook_name"])
     row = [ebook_id, isbn, ebook_name]
     try:
         row.extend(get_douban(isbn))
@@ -182,6 +182,40 @@ def to_line(input_row):
     print(row)
     return row
 
+def to_line_excel(input_row):
+    ebook_id = int(input_row['tid'])
+    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
+    ebook_name = input_row['ebook_name']
+    row = [ebook_id, isbn, ebook_name]
+    try:
+        row.extend(get_douban(isbn))
+    except:
+        row.extend(["", "", "", "", 0, "", "", ""])
+        traceback.print_exc()
+
+    try:
+        row.extend([get_dangdang(isbn)])
+    except:
+        row.extend([""])
+        traceback.print_exc()
+
+    try:
+        row.extend([get_jingdong(isbn)])
+    except:
+        row.extend([""])
+        traceback.print_exc()
+
+    try:
+        row.extend([get_amazon(isbn)])
+    except:
+        row.extend([""])
+        traceback.print_exc()
+
+    update_time = datetime.datetime.now()
+
+    print("to_line   ")
+    print(row)
+    return row
 # conn = pymysql.connect(host="192.168.1.224", user="root", passwd="123456", db="reportsystem", charset="utf8")
 # engine = create_engine('mysql+pymysql://root:dzx561.@:129.226.62.102:3306/bigdata')
 # sql_query = 'SELECT isbn,title FROM bigdata.t_ebook_library limit 2'

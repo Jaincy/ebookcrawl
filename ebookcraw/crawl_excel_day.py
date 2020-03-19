@@ -8,7 +8,7 @@ from datetime import timedelta
 import pandas as pd
 from sqlalchemy import create_engine
 
-from crawl_mysql import to_line
+from crawl_mysql import to_line, to_line_excel
 
 
 def getYesterday():
@@ -38,7 +38,7 @@ for i in range(len(df)):
     try:
         # 爬出新数据
         this_data = []
-        row = to_line(last_line)
+        row = to_line_excel(last_line)
         # row.append(this_week_start)
         this_data.append(row)
 
