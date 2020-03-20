@@ -119,7 +119,7 @@ def get_jingdong(isbn):
 
 def get_douban(isbn):
     url = "https://douban-api.uieee.com/v2/book/isbn/" + isbn
-    url="https://douban.uieee.com/v2/book/isbn/"+isbn
+    url = "https://douban.uieee.com/v2/book/isbn/" + isbn
 
     print("url:  " + url)
     # 包装头部
@@ -137,12 +137,16 @@ def get_douban(isbn):
         eprice = "  "
 
     l = ""
+    num_raters = djson['rating']['numRaters']
+    print(type(num_raters))
+    if  not(num_raters.isdigit) :
+        num_raters = 0
+
     for i in range(len(djson["tags"])):
         l = l + djson["tags"][i]["name"] + ","
     # 3. 构建列表头 ISBN	名称	作者	出版时间	对应出版社		豆瓣书名	豆瓣评分	参与评分人数	豆瓣电子书价格	豆瓣标签
-    row = [djson["title"], djson['author'][0], djson['publisher'], djson['rating']['average'],
-           djson['rating']['numRaters'],
-           eprice, l, djson['summary']]
+    row = [djson["title"], djson['author'][0], djson['rating']['average'],
+           num_raters, eprice, l, djson['summary']]
     print("douban: " + eprice)
     return row
 
@@ -151,11 +155,11 @@ def to_line(input_row):
     ebook_id = int(input_row['ebook_id'])
     isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
     ebook_name = str(input_row["ebook_name"])
-    row = [ebook_id, isbn, ebook_name]
+    row = [ebook_id, isbn, ebook_name, ""]
     try:
         row.extend(get_douban(isbn))
     except:
-        row.extend(["", "", "", "", 0, "", "", ""])
+        row.extend(["", "", "", 0, 0, "", ""])
         traceback.print_exc()
 
     try:
@@ -181,16 +185,17 @@ def to_line(input_row):
     print("to_line   ")
     print(row)
     return row
+
 
 def to_line_excel(input_row):
-    ebook_id = int(input_row['tid'])
     isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
     ebook_name = input_row['ebook_name']
-    row = [ebook_id, isbn, ebook_name]
+    publisher = input_row['publisher']
+    row = [isbn, ebook_name, publisher]
     try:
         row.extend(get_douban(isbn))
     except:
-        row.extend(["", "", "", "", 0, "", "", ""])
+        row.extend(["", "", "", 0, 0, "", ""])
         traceback.print_exc()
 
     try:
@@ -216,6 +221,9 @@ def to_line_excel(input_row):
     print("to_line   ")
     print(row)
     return row
+
+
+
 # conn = pymysql.connect(host="192.168.1.224", user="root", passwd="123456", db="reportsystem", charset="utf8")
 # engine = create_engine('mysql+pymysql://root:dzx561.@:129.226.62.102:3306/bigdata')
 # sql_query = 'SELECT isbn,title FROM bigdata.t_ebook_library limit 2'

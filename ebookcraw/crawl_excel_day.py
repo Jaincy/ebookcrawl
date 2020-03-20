@@ -25,10 +25,10 @@ now = datetime.datetime.now()
 this_week_start = (now - timedelta(days=now.weekday())).strftime("%Y-%m-%d")
 
 engine = create_engine('mysql+pymysql://root:dzx561.@118.25.112.177:3306/bigdata')
-sql_query = "SELECT tid,isbn,ebook_name,create_time FROM bigdata.t_ebook_excel  where  DATE_FORMAT(create_time,'%%Y-%%m-%%d')='" + day_id + "' "
+sql_query = "SELECT tid,isbn,ebook_name,publisher,create_time FROM bigdata.t_ebook_excel  where  DATE_FORMAT(create_time,'%%Y-%%m-%%d')='" + day_id + "' "
 df = pd.read_sql(sql=sql_query, con=engine)
 
-columns = ["tid", "isbn", "ebook_name", "douban_name", "author", "publisher",
+columns = ["isbn", "ebook_name", "publisher", "douban_name", "author",
            "rate", "num_raters", "douban_price", "tags", "douban_summary",
            "dangdang_price", "jingdong_price", "amazon_price"]
 
@@ -47,7 +47,7 @@ for i in range(len(df)):
         print("df:  ")
         print(write_df)
         write_df.to_sql('t_ebook_excel_crawl', engine, if_exists='append', index=False,
-                  chunksize=100)
+                        chunksize=100)
         # sleep(random.randint(1, 300))
     except:
         traceback.print_exc()
