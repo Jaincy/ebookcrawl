@@ -7,11 +7,13 @@ import traceback
 from datetime import timedelta
 import random
 from time import sleep
+import mysql.connector
 
 import pandas as pd
 from sqlalchemy import create_engine
 
-from crawl_mysql import  crawl_row
+from crawl_mysql import crawl_row
+
 
 def to_line(input_row):
     ebook_id = int(input_row['tid'])
@@ -22,7 +24,6 @@ def to_line(input_row):
     row = [ebook_id, isbn, ebook_name, ""]
     row_end = crawl_row(row, isbn)
     return row_end
-
 
 
 def getYesterday():
@@ -50,6 +51,8 @@ columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publisher
            "rate", "num_raters", "douban_price", "tags", "douban_summary",
            "dangdang_price", "jingdong_price", "amazon_price", "week_id"]
 
+conn = mysql.connector.connect(user='root', password='dzx561.', database='bigdata')
+cursor = conn.cursor()
 for i in range(len(df)):
     last_line = df.loc[i]
     print(last_line)
@@ -60,14 +63,19 @@ for i in range(len(df)):
         this_row.append(this_week_start)
         this_data.append(this_row)
 
-        # 插入新的数据
         write_df = pd.DataFrame(this_data, columns=columns)
         print(write_df)
+        # 删除本周之前的数据
+        cursor.execute(
+            "delete from t_ebook_crawl where week_id='" + this_week_start + "' and ebook_id='" + this_data[0] + "'")
+        # 插入新的数据
         write_df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
                         chunksize=100)
+
         sleep(random.randint(0, 9))
     except:
         traceback.print_exc()
 
+conn.close()
+cursor.close()
 print("输出成功")
-
