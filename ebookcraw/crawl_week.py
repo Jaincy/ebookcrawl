@@ -98,7 +98,7 @@ for i in range(len(last_df)):
         df = pd.DataFrame().append(this_line)
         print(df)
 
-        # 删除本周之前的数据
+        # 删除之前的数据
         cursor.execute(
             "delete from t_ebook_crawl where week_id='" + this_week_start + "' and ebook_id='" + this_data[0] + "'")
         # 插入
