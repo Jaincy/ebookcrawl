@@ -6,10 +6,24 @@ import traceback
 from datetime import timedelta
 from time import sleep
 
+import mysql
 import pandas as pd
 from sqlalchemy import create_engine
 
 from crawl_mysql import crawl_row
+
+
+def to_line_week(input_row):
+    ebook_id = int(input_row['ebook_id'])
+    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
+    if isbn is None or isbn == "None":
+        return
+    ebook_name = str(input_row["ebook_name"])
+
+    row = [ebook_id, isbn, ebook_name, ""]
+    row_end = crawl_row(row, isbn)
+    return row_end
+
 
 now = datetime.datetime.now()
 
@@ -30,7 +44,6 @@ last_df = pd.read_sql(sql=last_query, con=engine)
 lib_query = "SELECT tid,isbn,title FROM bigdata.t_ebook_library "
 lib_df = pd.read_sql(sql=lib_query, con=engine)
 
-
 columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publisher",
            "rate", "num_raters", "douban_price", "douban_change", "tags", "douban_summary",
            "dangdang_price", "dangdang_change", "jingdong_price", "jingdong_change", "amazon_price", "amazon_change",
@@ -40,17 +53,8 @@ this_columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publ
                 "rate", "num_raters", "douban_price", "tags", "douban_summary",
                 "dangdang_price", "jingdong_price", "amazon_price"]
 
-
-def to_line_week(input_row):
-    ebook_id = int(input_row['ebook_id'])
-    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
-    if isbn is None or isbn == "None":
-        return
-    ebook_name = str(input_row["ebook_name"])
-
-    row = [ebook_id, isbn, ebook_name, ""]
-    row_end = crawl_row(row, isbn)
-    return row_end
+conn = mysql.connector.connect(user='root', password='dzx561.', database='bigdata')
+cursor = conn.cursor()
 
 for i in range(len(last_df)):
     last_line = last_df.loc[i]
@@ -93,14 +97,17 @@ for i in range(len(last_df)):
         # 插入新的数据
         df = pd.DataFrame().append(this_line)
         print(df)
+
+        # 删除本周之前的数据
+        cursor.execute(
+            "delete from t_ebook_crawl where week_id='" + this_week_start + "' and ebook_id='" + this_data[0] + "'")
+        # 插入
         df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
                   chunksize=100)
         # sleep(random.randint(1, 300))
     except:
         traceback.print_exc()
 
-
+conn.close()
+cursor.close()
 print("输出成功")
-
-
-
