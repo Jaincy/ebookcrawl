@@ -4,9 +4,9 @@ import datetime
 import random
 import traceback
 from datetime import timedelta
-from time import sleep
+import time
 
-import mysql
+import mysql.connector
 import pandas as pd
 from sqlalchemy import create_engine
 
@@ -53,10 +53,9 @@ this_columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publ
                 "rate", "num_raters", "douban_price", "tags", "douban_summary",
                 "dangdang_price", "jingdong_price", "amazon_price"]
 
-conn = mysql.connector.connect(user='root', password='dzx561.', database='bigdata')
-cursor = conn.cursor()
-
 for i in range(len(last_df)):
+    conn = mysql.connector.connect(user='root', passwd='dzx561.', database='bigdata', host="118.25.112.177")
+    cursor = conn.cursor()
     last_line = last_df.loc[i]
     print(last_line)
     try:
@@ -96,18 +95,23 @@ for i in range(len(last_df)):
         this_line["week_id"] = this_week_start
         # 插入新的数据
         df = pd.DataFrame().append(this_line)
-        print(df)
 
         # 删除之前的数据
-        cursor.execute(
-            "delete from t_ebook_crawl where week_id='" + this_week_start + "' and ebook_id='" + this_data[0] + "'")
+        sql = "delete from t_ebook_crawl where week_id=%s and ebook_id=%s"
+        value = (str(this_week_start), str(last_line["ebook_id"]))
+        print(value)
+        cursor.execute(sql, value)
+        conn.commit()
+        conn.close()
+        cursor.close()
         # 插入
         df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
                   chunksize=100)
-        # sleep(random.randint(1, 300))
+        print(df)
+        print("写入一条")
+        time.sleep(random.randint(0, 300))
     except:
         traceback.print_exc()
 
-conn.close()
-cursor.close()
+
 print("输出成功")

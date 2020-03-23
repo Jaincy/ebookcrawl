@@ -51,9 +51,9 @@ columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publisher
            "rate", "num_raters", "douban_price", "tags", "douban_summary",
            "dangdang_price", "jingdong_price", "amazon_price", "week_id"]
 
-conn = mysql.connector.connect(user='root', password='dzx561.', database='bigdata')
-cursor = conn.cursor()
 for i in range(len(df)):
+    conn = mysql.connector.connect(user='root', passwd='dzx561.', database='bigdata', host="118.25.112.177")
+    cursor = conn.cursor()
     last_line = df.loc[i]
     print(last_line)
     try:
@@ -66,13 +66,17 @@ for i in range(len(df)):
         write_df = pd.DataFrame(this_data, columns=columns)
         print(write_df)
         # 删除本周之前的数据
-        cursor.execute(
-            "delete from t_ebook_crawl where week_id='" + this_week_start + "' and ebook_id='" + this_data[0] + "'")
+        sql = "delete from t_ebook_crawl where week_id=%s and ebook_id=%s"
+        value = (str(this_week_start), str(last_line["tid"]))
+        cursor.execute(sql, value)
+        conn.commit()
+        conn.close()
+        cursor.close()
         # 插入新的数据
         write_df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
                         chunksize=100)
 
-        sleep(random.randint(0, 9))
+        sleep(random.randint(0, 100))
     except:
         traceback.print_exc()
 
