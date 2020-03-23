@@ -8,6 +8,7 @@ import requests
 from bs4 import BeautifulSoup
 from sqlalchemy import create_engine
 import datetime
+import re
 
 
 def get_weixin_token():
@@ -76,8 +77,15 @@ def get_amazon(isbn):
     content = response.content
     strs = str(content, encoding="utf-8")
     bs = BeautifulSoup(strs)
-    price_class = bs.find(class_="a-offscreen")
-    price = price_class.get_text().replace("￥", "")
+    try:
+        # price_class_normal = bs.find_all(class_="a-row a-size-base a-color-secondary")
+        reg = re.compile("或者.*购买")
+        price_class_normal = bs.find(text=reg)
+        price = price_class_normal.replace("或者￥", "").replace("购买", "")
+    except:
+        price_class = bs.find(class_="a-offscreen")
+        price = price_class.get_text().replace("￥", "")
+        traceback.print_exc()
 
     print("amazon: " + str(price))
     return price
@@ -139,23 +147,22 @@ def get_douban(isbn):
     l = ""
     num_raters = djson['rating']['numRaters']
     print(type(num_raters))
-    if  not(num_raters.isdigit) :
-        num_raters = 0
+    # if not (num_raters.isdigit):
+    #     num_raters = 0
+    author = ""
+    if len(djson['author']) >= 1:
+        author = djson['author'][0]
 
     for i in range(len(djson["tags"])):
-        l = l + djson["tags"][i]["name"] + ","
+        l = l + djson["tags"][i]["name"].replace(",", "") + " "
     # 3. 构建列表头 ISBN	名称	作者	出版时间	对应出版社		豆瓣书名	豆瓣评分	参与评分人数	豆瓣电子书价格	豆瓣标签
-    row = [djson["title"], djson['author'][0], djson['rating']['average'],
+    row = [djson["title"], author, djson['rating']['average'],
            num_raters, eprice, l, djson['summary']]
     print("douban: " + eprice)
     return row
 
 
-def to_line(input_row):
-    ebook_id = int(input_row['ebook_id'])
-    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
-    ebook_name = str(input_row["ebook_name"])
-    row = [ebook_id, isbn, ebook_name, ""]
+def crawl_row(row, isbn):
     try:
         row.extend(get_douban(isbn))
     except:
@@ -185,44 +192,6 @@ def to_line(input_row):
     print("to_line   ")
     print(row)
     return row
-
-
-def to_line_excel(input_row):
-    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
-    ebook_name = input_row['ebook_name']
-    publisher = input_row['publisher']
-    row = [isbn, ebook_name, publisher]
-    try:
-        row.extend(get_douban(isbn))
-    except:
-        row.extend(["", "", "", 0, 0, "", ""])
-        traceback.print_exc()
-
-    try:
-        row.extend([get_dangdang(isbn)])
-    except:
-        row.extend([""])
-        traceback.print_exc()
-
-    try:
-        row.extend([get_jingdong(isbn)])
-    except:
-        row.extend([""])
-        traceback.print_exc()
-
-    try:
-        row.extend([get_amazon(isbn)])
-    except:
-        row.extend([""])
-        traceback.print_exc()
-
-    update_time = datetime.datetime.now()
-
-    print("to_line   ")
-    print(row)
-    return row
-
-
 
 # conn = pymysql.connect(host="192.168.1.224", user="root", passwd="123456", db="reportsystem", charset="utf8")
 # engine = create_engine('mysql+pymysql://root:dzx561.@:129.226.62.102:3306/bigdata')
@@ -252,3 +221,6 @@ def to_line_excel(input_row):
 # print("输出成功")
 #
 # dt.to_sql('t_ebook_consultation', engine, if_exists='append', index=False, chunksize=100)
+
+
+# get_amazon("9787111515500")

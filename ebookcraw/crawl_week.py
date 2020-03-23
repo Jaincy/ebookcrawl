@@ -9,7 +9,7 @@ from time import sleep
 import pandas as pd
 from sqlalchemy import create_engine
 
-from ebookcraw.crawl_mysql import to_line
+from crawl_mysql import crawl_row
 
 now = datetime.datetime.now()
 
@@ -40,13 +40,25 @@ this_columns = ["ebook_id", "isbn", "ebook_name", "douban_name", "author", "publ
                 "rate", "num_raters", "douban_price", "tags", "douban_summary",
                 "dangdang_price", "jingdong_price", "amazon_price"]
 
+
+def to_line_week(input_row):
+    ebook_id = int(input_row['ebook_id'])
+    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
+    if isbn is None or isbn == "None":
+        return
+    ebook_name = str(input_row["ebook_name"])
+
+    row = [ebook_id, isbn, ebook_name, ""]
+    row_end = crawl_row(row, isbn)
+    return row_end
+
 for i in range(len(last_df)):
     last_line = last_df.loc[i]
     print(last_line)
     try:
         # 爬出新数据
         this_data = []
-        row = to_line(last_line)
+        row = to_line_week(last_line)
         this_data.append(row)
         this_df = pd.DataFrame(this_data, columns=this_columns)
         this_line = this_df.loc[0]
@@ -89,3 +101,6 @@ for i in range(len(last_df)):
 
 
 print("输出成功")
+
+
+

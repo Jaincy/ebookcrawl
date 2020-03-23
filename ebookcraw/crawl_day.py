@@ -5,13 +5,24 @@ import datetime
 import sys
 import traceback
 from datetime import timedelta
-from random import random
+import random
 from time import sleep
 
 import pandas as pd
 from sqlalchemy import create_engine
 
-from crawl_mysql import to_line
+from crawl_mysql import  crawl_row
+
+def to_line(input_row):
+    ebook_id = int(input_row['tid'])
+    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
+    if isbn is None or isbn == "None":
+        return
+    ebook_name = str(input_row["title"])
+    row = [ebook_id, isbn, ebook_name, ""]
+    row_end = crawl_row(row, isbn)
+    return row_end
+
 
 
 def getYesterday():
@@ -54,8 +65,9 @@ for i in range(len(df)):
         print(write_df)
         write_df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
                         chunksize=100)
-        sleep(random.randint(1, 10))
+        sleep(random.randint(0, 9))
     except:
         traceback.print_exc()
 
 print("输出成功")
+

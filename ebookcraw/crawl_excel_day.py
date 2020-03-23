@@ -8,7 +8,16 @@ from datetime import timedelta
 import pandas as pd
 from sqlalchemy import create_engine
 
-from crawl_mysql import to_line, to_line_excel
+from crawl_mysql import crawl_row
+
+
+def to_line_excel(input_row):
+    isbn = str(input_row["isbn"]).replace("-", "").replace(".0", "")
+    ebook_name = input_row['ebook_name']
+    publisher = input_row['publisher']
+    row = [isbn, ebook_name, publisher]
+    row_end = crawl_row(row, isbn)
+    return row_end
 
 
 def getYesterday():
