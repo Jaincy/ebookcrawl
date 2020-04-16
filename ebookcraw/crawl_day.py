@@ -21,7 +21,7 @@ def to_line(input_row):
     if isbn is None or isbn == "None":
         return
     ebook_name = str(input_row["title"])
-    row = [ebook_id, isbn, ebook_name, ""]
+    row = [ebook_id, isbn, ebook_name]
     row_end = crawl_row(row, isbn)
     return row_end
 
@@ -76,10 +76,8 @@ for i in range(len(df)):
         write_df.to_sql('t_ebook_crawl', engine, if_exists='append', index=False,
                         chunksize=100)
 
-        sleep(random.randint(0, 100))
+        sleep(random.randint(1, 10))
     except:
         traceback.print_exc()
 
-conn.close()
-cursor.close()
 print("输出成功")
