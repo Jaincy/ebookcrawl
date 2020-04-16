@@ -142,7 +142,7 @@ def get_douban(isbn):
     if strs.__contains__("ebook_price"):
         eprice = djson['ebook_price']
     else:
-        eprice = "  "
+        eprice = ""
 
     l = ""
     num_raters = djson['rating']['numRaters']
@@ -156,7 +156,7 @@ def get_douban(isbn):
     for i in range(len(djson["tags"])):
         l = l + djson["tags"][i]["name"].replace(",", "") + " "
     # 3. 构建列表头 ISBN	名称	作者	出版时间	对应出版社		豆瓣书名	豆瓣评分	参与评分人数	豆瓣电子书价格	豆瓣标签
-    row = [djson["title"], author, djson['rating']['average'],
+    row = [djson["title"], author, djson['publisher'], djson['rating']['average'],
            num_raters, eprice, l, djson['summary']]
     print("douban: " + eprice)
     return row

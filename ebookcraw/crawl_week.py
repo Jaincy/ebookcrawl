@@ -20,7 +20,7 @@ def to_line_week(input_row):
         return
     ebook_name = str(input_row["ebook_name"])
 
-    row = [ebook_id, isbn, ebook_name, ""]
+    row = [ebook_id, isbn, ebook_name]
     row_end = crawl_row(row, isbn)
     return row_end
 

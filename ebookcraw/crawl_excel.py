@@ -116,7 +116,7 @@ def get_jingdong(isbn):
 
 def get_douban(isbn):
     url = "https://douban-api.uieee.com/v2/book/isbn/" + isbn
-    url = "https://douban.uieee.com/v2/book/isbn/" + isbn
+    # url = "https://douban.uieee.com/v2/book/isbn/" + isbn
     print("url:  " + url)
     # 包装头部
     firefox_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0'}
