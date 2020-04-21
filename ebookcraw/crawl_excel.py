@@ -193,7 +193,7 @@ for i in range(len(df)):
     input_row = df.loc[i]
     print(input_row)
     try:
-        sleep(random.randint(5, 10))
+        sleep(random.randint(10, 15))
         to_xlsx(input_row, "")
     except:
         traceback.print_exc()
@@ -207,4 +207,4 @@ dt = pd.DataFrame(write_df, columns=columns)
 dt.to_excel("../excel/" + file + "_output.xlsx")
 # dt.to_csv("../excel/" + file + "_output.csv")
 
-print("输出成功")
+print("-----------------------------输出成功--------------------------------------")
