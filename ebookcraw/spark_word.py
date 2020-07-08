@@ -7,7 +7,6 @@ from pyspark import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql import SQLContext
 import pymysql
-import MySQLdb
 import pandas
 import mysql.connector
 

@@ -81,3 +81,6 @@ for i in range(len(df)):
         traceback.print_exc()
 
 print("输出成功")
+
+if 1 == 1:
+    print(1)

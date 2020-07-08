@@ -5,6 +5,12 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import time
+import torch
+from urllib import request
+from urllib.parse import quote
+import string
+from selenium import webdriver
+
 
 def get_amazon(isbn):
     firefox_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0',
@@ -86,34 +92,30 @@ def get_weixin_token():
 
 
 def get_douban(isbn):
-
     # href = bs0bj.find(class_="cover-link").find('a').get('href')
-
 
     # 包装头部
     firefox_headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0'}
-    url = "https://search.douban.com/book/subject_search?search_text=" + str(isbn)+"&cat=1001"
-    url="https://book.douban.com/subject/1056023/"
-    print(url)
-    # html = urlopen(url)
-    # bs0bj = BeautifulSoup(html)
-    # print(bs0bj.contents)
-
+    search_url = "https://search.douban.com/book/subject_search?search_text=" + str(isbn) + "&cat=1001"
+    print(search_url)
+    search_url = "https://search.douban.com/book/subject_search?search_text=9787536091672&cat=1001"
     # 构建请求
+    s = quote(search_url, safe=string.printable)
+    # response = request.urlopen(search_url)
+
+    # print(search_bs)
+    # self.driver = webdriver.Firefox(executable_path='D:\soft\Mozilla Firefox\geckodriver')
+    browser = webdriver.Firefox()
+    browser.get(search_url)
+    url = browser.find_element_by_class_name("cover-link").get_attribute("href")
     response = requests.get(url, headers=firefox_headers)
     content = response.content
     strs = str(content, encoding="utf-8")
 
-    # 截取字符串<span class="buylink-price">
-    #
-    #             <span class="">5.99 元</span>
-    #           </span>
-    print(strs)
-    # bsd= BeautifulSoup(strs)
-    #
-    # p=bsd.find(class_="buylink-price")
-    # print(p)
-    return "1"
+    search_bs = BeautifulSoup(strs)
+    print(search_bs)
+    # browser.close()
+
 
 get_douban(9787805677316)
 
@@ -122,3 +124,20 @@ get_douban(9787805677316)
 # print("sfsdf,".split(",")[1])
 
 
+# import torch
+# x = torch.rand(5, 3)
+# print(x)
+#
+# print(torch.cuda.is_available())
+#
+# torch.nn
+
+# l = [1, 2, 3]
+#
+# print(l[0])
+#
+# tup1 = ('Google', 'Runoob', 1997, 2000)
+# tup2 = (1, 2, 3, 4, 5, 6, 7)
+#
+# print("tup1[0]: ", tup1[0])
+# print("tup2[1:5]: ", tup2[1:5])
